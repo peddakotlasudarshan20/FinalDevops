@@ -6,7 +6,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/peddakotlasudarshan20/FinalDevops.git'
+                    url: 'https://github.com/peddakotlasudarshan20/FinalDevops.git'
             }
         }
 
@@ -17,19 +17,21 @@ pipeline {
                     python3 -m pip install --upgrade pip
                     pip3 install -r requirements.txt
                     '''
-                }         
-           }
+                }
+            }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonar-server') {
-                    sh '''
-                    sonar-scanner \
-                    -Dsonar.projectKey=FinalDevops \
-                    -Dsonar.sources=. \
-                    -Dsonar.sourceEncoding=UTF-8
-                    '''
+                dir('sample-flask-with-kubernetes') {
+                    withSonarQubeEnv('Sonarqube') {
+                        sh '''
+                        sonar-scanner \
+                        -Dsonar.projectKey=FinalDevops \
+                        -Dsonar.sources=. \
+                        -Dsonar.sourceEncoding=UTF-8
+                        '''
+                    }
                 }
             }
         }
@@ -49,9 +51,9 @@ pipeline {
                 docker rm finaldevops || true
 
                 docker run -d \
-                --name finaldevops \
-                -p 5000:5000 \
-                finaldevops:latest
+                  --name finaldevops \
+                  -p 5000:5000 \
+                  finaldevops:latest
                 '''
             }
         }
