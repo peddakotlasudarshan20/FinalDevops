@@ -1,61 +1,68 @@
 pipeline {
-    agent any
+agent any
 
-    stages {
+```
+stages {
 
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/peddakotlasudarshan20/FinalDevops.git'
-            }
+    stage('Checkout') {
+        steps {
+            git branch: 'main',
+                url: 'https://github.com/peddakotlasudarshan20/FinalDevops.git'
         }
+    }
 
-        stage('Install Dependencies') {
-            steps {
-                dir('sample-flask-with-kubernetes') {
-                    sh '''
-                    python3 -m pip install --upgrade pip
-                    pip3 install -r requirements.txt
-                    '''
-                }
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                dir('sample-flask-with-kubernetes') {
-                    withSonarQubeEnv('Sonarqube') {
-                        sh '''
-                        sonar-scanner \
-                        -Dsonar.projectKey=FinalDevops \
-                        -Dsonar.sources=. \
-                        -Dsonar.sourceEncoding=UTF-8
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                dir('sample-flask-with-kubernetes') {
-                    sh 'docker build -t finaldevops:latest .'
-                }
-            }
-        }
-
-        stage('Deploy Docker Container') {
-            steps {
+    stage('Install Dependencies') {
+        steps {
+            dir('sample-flask-with-kubernetes') {
                 sh '''
-                docker stop finaldevops || true
-                docker rm finaldevops || true
-
-                docker run -d \
-                  --name finaldevops \
-                  -p 5000:5000 \
-                  finaldevops:latest
+                python3 -m pip install --upgrade pip
+                pip3 install -r requirements.txt
                 '''
             }
         }
     }
+
+    stage('SonarQube Analysis') {
+        steps {
+            dir('sample-flask-with-kubernetes') {
+                script {
+                    def scannerHome = tool 'sonar-scanner'
+
+                    withSonarQubeEnv('Sonarqube') {
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=FinalDevops \
+                        -Dsonar.sources=. \
+                        -Dsonar.sourceEncoding=UTF-8
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    stage('Build Docker Image') {
+        steps {
+            dir('sample-flask-with-kubernetes') {
+                sh 'docker build -t finaldevops:latest .'
+            }
+        }
+    }
+
+    stage('Deploy Docker Container') {
+        steps {
+            sh '''
+            docker stop finaldevops || true
+            docker rm finaldevops || true
+
+            docker run -d \
+              --name finaldevops \
+              -p 5000:5000 \
+              finaldevops:latest
+            '''
+        }
+    }
+}
+```
+
 }
