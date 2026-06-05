@@ -12,11 +12,13 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh '''
-                python3 -m pip install --upgrade pip
-                pip3 install -r requirements.txt
-                '''
-            }
+                dir('sample-flask-with-kubernetes') {
+                    sh '''
+                    python3 -m pip install --upgrade pip
+                    pip3 install -r requirements.txt
+                    '''
+                }         
+           }
         }
 
         stage('SonarQube Analysis') {
@@ -34,7 +36,9 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t finaldevops:latest .'
+                dir('sample-flask-with-kubernetes') {
+                    sh 'docker build -t finaldevops:latest .'
+                }
             }
         }
 
