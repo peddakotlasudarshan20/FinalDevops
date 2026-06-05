@@ -27,8 +27,8 @@ secret_number = random.randint(1, 10)
 def game():
     global secret_number
 
-    message = "🎯 Guess a number between 1 and 10"
-    message_color = "#ffffff"
+    message = " Guess a number between 1 and 10"
+    message_color ="#ffffff"
 
     if request.method == "POST":
         guess = request.form.get("guess")
@@ -37,20 +37,20 @@ def game():
             guess = int(guess)
 
             if guess == secret_number:
-                message = f"🎉 Correct! The number was {secret_number}. New game started!"
+                message = f" Correct! The number was {secret_number}. New game started!"
                 message_color = "#00ff88"
                 secret_number = random.randint(1, 10)
 
             elif guess < secret_number:
-                message = "📉 Too Low! Try Again."
+                message = " Too Low! Try Again."
                 message_color = "#ffd43b"
 
             else:
-                message = "📈 Too High! Try Again."
+                message = " Too High! Try Again."
                 message_color = "#ff6b6b"
 
         except ValueError:
-            message = "❌ Please enter a valid number."
+            message = " Please enter a valid number."
             message_color = "#ff4757"
 
     return f"""
